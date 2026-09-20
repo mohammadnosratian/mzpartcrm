@@ -2838,7 +2838,11 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
               </tbody>
             </table>
           </div>
-          <div style="margin-top:14px"><button class="btn btn-accent" onclick="savePermsManual()">ذخیره تغییرات دسترسی</button></div>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-accent" onclick="savePermsManual()">ذخیره تغییرات دسترسی</button>
+            <button class="btn btn-ghost" style="border:1px solid var(--accent);color:var(--accent)" onclick="addNewRole()">+ افزودن نقش جدید</button>
+          </div>
+          <div id="customRolesList" style="margin-top:10px"></div>
         </div>
       </div>
 
@@ -3620,11 +3624,6 @@ function confirmProductImport(){
     <div class="fg"><label>نقش کاربر</label>
       <select id="addUserRole">
         <option value="">انتخاب نقش...</option>
-        <option>مدیریت</option>
-        <option>پشتیبان/اپراتور</option>
-        <option>انباردار</option>
-        <option>مدیر مالی</option>
-        <option>واحد لجستیک</option>
       </select>
     </div>
     <div class="fg"><label>کد ورود (تعیین توسط مدیریت — کاربر در ورود این کد را وارد می‌کند)</label><input type="text" id="addUserCode" dir="ltr" inputmode="numeric" maxlength="6" placeholder="مثال: 1234" style="letter-spacing:4px;font-weight:800;text-align:center"></div>
@@ -5769,12 +5768,16 @@ function showSettingTab(tab){
   const map={users:'stab-users',logins:'stab-logins',roles:'stab-roles',company:'stab-company'};
   Object.keys(map).forEach(function(k){ const el=document.getElementById(map[k]); if(el) el.style.display=(k===tab?'':'none'); });
   if(tab==='logins'){ try{ renderLoginLogs(); }catch(e){} }
-  if(tab==='roles'){ try{ _renderPermTableFromStorage(); }catch(e){} }
+  if(tab==='roles'){ try{ _renderPermTableFromStorage(); _renderCustomRolesList(); _refreshRoleDropdown(); }catch(e){} }
 }
 
 // ══════ Permission System — persistent + hide nav/section when OFF ══════
 const LS_PERMS='crm_perms';
-const ROLES=['مدیریت','پشتیبان/اپراتور','انباردار','مدیر مالی','واحد لجستیک'];
+const LS_CUSTOM_ROLES='crm_custom_roles';
+const _BASE_ROLES=['مدیریت','پشتیبان/اپراتور','انباردار','مدیر مالی','واحد لجستیک'];
+let ROLES=[].concat(_BASE_ROLES);
+// Load custom roles from localStorage
+try{ const cr=JSON.parse(localStorage.getItem(LS_CUSTOM_ROLES)||'[]'); if(Array.isArray(cr)){ cr.forEach(function(r){ if(ROLES.indexOf(r)===-1) ROLES.push(r); }); } }catch(e){}
 const LABEL_TO_NAV={
   'مشاهده داشبورد':'dashboard','مشاهده فروش روزانه':'dailySales','ثبت سفارش':'dailySales','ویرایش/حذف سفارش':'dailySales',
   'مشاهده مشتریان':'customers','افزودن/ویرایش مشتری':'customers','حذف مشتری':'customers',
@@ -5885,6 +5888,133 @@ function savePermsManual(){
   if(currentRole!=='مدیریت'){ showToast&&showToast('فقط مدیریت'); return; }
   try{ _savePermsFromDOM(); applyRoleGating(); showToast&&showToast('تغییرات دسترسی ذخیره شد'); }catch(e){ showToast&&showToast('ذخیره شد'); }
 }
+
+// ── Custom Roles Management ──
+function _saveCustomRoles(){
+  try{
+    const custom=ROLES.filter(function(r){ return _BASE_ROLES.indexOf(r)===-1; });
+    localStorage.setItem(LS_CUSTOM_ROLES, JSON.stringify(custom));
+  }catch(e){}
+}
+function _renderCustomRolesList(){
+  const el=document.getElementById('customRolesList');
+  if(!el) return;
+  const custom=ROLES.filter(function(r){ return _BASE_ROLES.indexOf(r)===-1; });
+  if(!custom.length){ el.innerHTML=''; return; }
+  let h='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">';
+  custom.forEach(function(r){
+    h+='<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:12px">'+
+      '<span>'+r+'</span>'+
+      '<button onclick="removeCustomRole(\''+r.replace(/'/g,"\\'")+'\')" title="حذف نقش" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;line-height:1;padding:0">×</button>'+
+    '</span>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
+  // Also refresh the role dropdown in add-user form
+  _refreshRoleDropdown();
+}
+function _refreshRoleDropdown(){
+  const sel=document.getElementById('addUserRole');
+  if(!sel) return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">انتخاب نقش...</option>';
+  ROLES.forEach(function(r){
+    const opt=document.createElement('option');
+    opt.textContent=r;
+    opt.value=r;
+    sel.appendChild(opt);
+  });
+  if(cur && ROLES.indexOf(cur)!==-1) sel.value=cur;
+}
+function addNewRole(){
+  if(currentRole!=='مدیریت'){ showToast&&showToast('فقط مدیریت می‌تواند نقش اضافه کند'); return; }
+  const name=prompt('نام نقش جدید را وارد کنید:');
+  if(!name || !name.trim()) return;
+  const trimmed=name.trim();
+  if(ROLES.indexOf(trimmed)!==-1){ showToast&&showToast('این نقش قبلاً وجود دارد'); return; }
+  // Add to ROLES array
+  ROLES.push(trimmed);
+  _saveCustomRoles();
+  // Add column header to thead
+  const thead=document.querySelector('#permTable').closest('table').querySelector('thead tr');
+  if(thead){
+    const th=document.createElement('th');
+    th.style.textAlign='center';
+    th.textContent=trimmed;
+    thead.appendChild(th);
+  }
+  // Add toggle cell to every data row in permTable
+  const rows=document.querySelectorAll('#permTable tr');
+  rows.forEach(function(tr){
+    const tds=tr.querySelectorAll('td');
+    // Skip section header rows (colspan)
+    if(tr.querySelector('td[colspan]')) return;
+    const td=document.createElement('td');
+    td.className='tc';
+    const tog=document.createElement('div');
+    tog.className='perm-toggle';
+    tog.setAttribute('onclick','togglePerm(this)');
+    tog.setAttribute('data-role',trimmed);
+    // Copy label from first td if exists
+    const firstTd=tr.querySelector('td');
+    if(firstTd) tog.setAttribute('data-label',firstTd.textContent.trim());
+    tog.setAttribute('data-nav', LABEL_TO_NAV[firstTd.textContent.trim()]||'');
+    td.appendChild(tog);
+    tr.appendChild(td);
+  });
+  // Update colspan values for section headers
+  const newColCount=ROLES.length+1;
+  rows.forEach(function(tr){
+    if(tr.querySelector('td[colspan]')){
+      tr.querySelector('td[colspan]').setAttribute('colspan', newColCount);
+    }
+  });
+  // Save empty perms for new role
+  const perms=_loadPerms();
+  if(!perms[trimmed]) perms[trimmed]={};
+  _savePerms(perms);
+  _renderCustomRolesList();
+  showToast&&showToast('نقش «'+trimmed+'» اضافه شد — دسترسی‌ها را تنظیم کنید');
+}
+function removeCustomRole(roleName){
+  if(currentRole!=='مدیریت'){ showToast&&showToast('فقط مدیریت'); return; }
+  if(_BASE_ROLES.indexOf(roleName)!==-1){ showToast&&showToast('نقش‌های پیش‌فرض قابل حذف نیستند'); return; }
+  if(!confirm('آیا از حذف نقش «'+roleName+'» مطمئن هستید؟\nکاربران با این نقش دیگر قادر به ورود نخواهند بود.')) return;
+  // Remove from ROLES array
+  ROLES=ROLES.filter(function(r){ return r!==roleName; });
+  _saveCustomRoles();
+  // Remove column from thead
+  const thead=document.querySelector('#permTable').closest('table').querySelector('thead tr');
+  if(thead){
+    const ths=thead.querySelectorAll('th');
+    ths.forEach(function(th){ if(th.textContent.trim()===roleName) th.remove(); });
+  }
+  // Remove toggle cells from all rows
+  const rows=document.querySelectorAll('#permTable tr');
+  rows.forEach(function(tr){
+    tr.querySelectorAll('.perm-toggle').forEach(function(tog){
+      if(tog.getAttribute('data-role')===roleName){
+        tog.closest('td').remove();
+      }
+    });
+  });
+  // Update colspan values
+  const newColCount=ROLES.length+1;
+  rows.forEach(function(tr){
+    if(tr.querySelector('td[colspan]')){
+      tr.querySelector('td[colspan]').setAttribute('colspan', newColCount);
+    }
+  });
+  // Remove perms for this role
+  const perms=_loadPerms();
+  delete perms[roleName];
+  _savePerms(perms);
+  _renderCustomRolesList();
+  _savePermsFromDOM();
+  showToast&&showToast('نقش «'+roleName+'» حذف شد');
+}
+// Render custom roles list on tab switch + populate role dropdown
+try{ _renderCustomRolesList(); _refreshRoleDropdown(); }catch(e){}
 
 // ── Logistics Tabs + Persistence ──
 const LS_LOG='crm_logistics';
@@ -12429,7 +12559,8 @@ const _syncTables = {
   'crm_cities':         {endpoint:'crm_lists',         hasId:false, idField:null, listKey:'cities'},
   'crm_categories':     {endpoint:'crm_lists',         hasId:false, idField:null, listKey:'categories'},
   'crm_cars':           {endpoint:'crm_lists',         hasId:false, idField:null, listKey:'cars'},
-  'crm_brands':         {endpoint:'crm_lists',         hasId:false, idField:null, listKey:'brands'}
+  'crm_brands':         {endpoint:'crm_lists',         hasId:false, idField:null, listKey:'brands'},
+  'crm_custom_roles':   {endpoint:'crm_lists',         hasId:false, idField:null, listKey:'custom_roles'}
 };
 
 let _syncOnline = navigator.onLine;
