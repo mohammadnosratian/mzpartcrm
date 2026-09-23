@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" style="overflow-x:hidden">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -372,13 +372,19 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Vazirmatn',sans-serif;background:var(--bg-main);color:var(--text-dark);direction:rtl;min-height:100vh;overflow-x:hidden}
 
-/* ── Sidebar ── */
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR — Complete rewrite (desktop + mobile)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Base (desktop) ── */
 .sidebar{
-  position:fixed;right:0;top:0;width:var(--sidebar-w);height:100vh;
-  background:var(--sidebar-bg);z-index:100;display:flex;flex-direction:column;
-  transition:width .28s ease,transform .3s;overflow-y:auto;overflow-x:hidden;
+  position:fixed;top:0;bottom:0;
+  right:0;left:auto;
+  width:var(--sidebar-w);height:100vh;
+  background:var(--sidebar-bg);z-index:100;
+  transition:width .28s ease;
+  overflow-y:auto;overflow-x:hidden;
 }
-.sidebar.collapsed{width:70px}
 .sidebar.collapsed .brand-info,
 .sidebar.collapsed .nav-item .label,
 .sidebar.collapsed .nav-item .badge,
@@ -427,7 +433,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg-main);color:var(--te
 .sb-toggle:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 body.sidebar-collapsed .sb-toggle{right:70px}
 
-.nav-list{padding:12px 10px;flex:1}
+.nav-list{padding:12px 10px}
 .nav-item{
   display:flex;align-items:center;gap:11px;padding:10px 14px;
   border-radius:var(--radius-sm);color:rgba(255,255,255,0.5);
@@ -659,11 +665,13 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
 .btn-danger{background:rgba(231,76,60,0.1);color:#c0392b;border:none}
 
 /* ── Tabs ── */
-.tabs{display:flex;gap:3px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px;width:fit-content}
+.tabs{display:flex;gap:3px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px;width:fit-content;align-items:stretch}
 .tab{
-  padding:7px 16px;border-radius:9px;border:none;background:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;
+  flex:0 0 auto;min-width:64px;min-height:32px;box-sizing:border-box;
+  padding:7px 14px;border-radius:9px;border:none;background:none;
   font-family:inherit;font-size:12px;font-weight:500;color:var(--text-light);
-  cursor:pointer;transition:all .18s;
+  cursor:pointer;transition:all .18s;line-height:1;text-align:center;
 }
 .tab.active{background:var(--accent);color:#fff;font-weight:600}
 .tab:hover:not(.active){color:var(--text-dark)}
@@ -1086,60 +1094,134 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   .header{padding:16px 18px 0}
 }
 @media(max-width:860px){
-  .login-screen{flex-direction:column}
-  .login-right{padding:28px 22px;min-height:42vh;flex:none}
-  .login-hero h1{font-size:32px}
-  .login-left{flex:1;padding:20px;background:#f3f1ec}
+  .login-screen{flex-direction:column;overflow-y:auto}
+  .login-right{padding:28px 22px;min-height:45vh;flex:none;background:linear-gradient(145deg,#162845 0%,#1d3354 45%,#2a4a6e 100%)}
+  .login-hero h1{font-size:36px}
+  .login-left{flex:1;padding:24px 20px;background:#f3f1ec;display:flex;align-items:center;justify-content:center}
   .header{gap:12px}
   .section-toolbar{justify-content:flex-start !important}
 }
+/* ══════════════════════════════════════════════════════════════
+   MOBILE SIDEBAR — Complete rewrite
+   Opens from RIGHT → LEFT (RTL)
+   Portrait + Landscape safe
+   ══════════════════════════════════════════════════════════════ */
 @media(max-width:768px){
-  /* Sidebar drawer */
-  .sidebar{transform:translateX(100%);width:280px;max-width:84vw;box-shadow:-8px 0 32px rgba(0,0,0,.18)}
-  .sidebar.open{transform:translateX(0)}
-  .sb-toggle{display:none !important}
-  .main{margin-right:0}
-  body.sidebar-collapsed .main{margin-right:0}
-  .sb-overlay{
-    display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.35);z-index:90;
+  /* ── Sidebar: hidden by default, drawer on RIGHT side ── */
+  /* NOTE: left/width are set by JavaScript to avoid RTL browser bugs */
+  .sidebar{
+    display:none !important;
+    position:fixed !important;
+    top:0 !important;bottom:0 !important;
+    height:100vh !important;height:100dvh !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+    box-shadow:-6px 0 28px rgba(0,0,0,.35) !important;
+    z-index:150 !important;border-radius:0 !important;
   }
-  .sb-overlay.show{display:block}
+  .sidebar.open{display:flex !important}
+  /* ── Brand/logo: hidden on mobile to save space ── */
+  .sidebar-brand{display:none !important}
+  /* ── Nav items: scrollable middle section ── */
+  .nav-list{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:8px 8px !important;
+  }
+  .nav-item{
+    padding:10px 12px !important;font-size:12px !important;
+    gap:8px !important;margin-bottom:1px !important;border-radius:10px !important;
+  }
+  .nav-item:active{background:rgba(255,255,255,0.12) !important;transform:scale(0.98) !important}
+  .nav-group-head{padding:10px 12px !important;font-size:12px !important;gap:8px !important}
+  .nav-item .icon,.nav-group-head .icon{width:20px !important;height:20px !important}
+  .nav-item .icon svg,.nav-group-head .icon svg{width:18px !important;height:18px !important}
+  .nav-item .badge{font-size:9px !important;padding:2px 6px !important}
+  /* Sub-items compact */
+  .nav-submenu{padding:4px 0 !important;margin:2px 10px 0 8px !important}
+  .nav-sub-item{padding:7px 10px 7px 8px !important;font-size:11px !important;gap:6px !important}
+  /* ── Footer: user info + logout — always pinned to bottom ── */
+  .sidebar-footer{
+    display:flex !important;align-items:center !important;
+    padding:12px 14px !important;
+    border-top:1px solid rgba(255,255,255,0.08) !important;
+    gap:8px !important;
+    flex-shrink:0 !important;
+    margin-top:auto !important;
+    position:sticky !important;bottom:0 !important;
+    background:var(--sidebar-bg) !important;z-index:5 !important;
+  }
+  .sidebar-footer .user-avatar{width:32px !important;height:32px !important;font-size:12px !important;flex-shrink:0 !important}
+  .sidebar-footer .user-info{min-width:0 !important;flex:1 !important}
+  .sidebar-footer .user-info .name{font-size:12px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important}
+  .sidebar-footer .user-info .role{font-size:10px !important}
+  #sbLogoutBtn{
+    flex-shrink:0 !important;padding:8px 12px !important;
+    font-size:12px !important;border-radius:10px !important;
+    background:rgba(255,255,255,0.08) !important;
+    border:1px solid rgba(255,255,255,0.1) !important;color:#fff !important;
+    transition:background .15s !important;
+    white-space:nowrap !important;
+  }
+  #sbLogoutBtn:active{background:rgba(239,68,68,0.3) !important;border-color:rgba(239,68,68,0.5) !important}
+  /* ── Desktop toggle: completely hidden on mobile ── */
+  .sb-toggle{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important;width:0 !important;height:0 !important;overflow:hidden !important}
+  /* ── Main content: full width on mobile ── */
+  .main{margin-right:0 !important;overflow-x:hidden !important;max-width:100vw !important}
+  body.sidebar-collapsed .main{margin-right:0}
+  /* ── Overlay backdrop ── */
+  .sb-overlay{
+    display:none !important;position:fixed !important;
+    top:0 !important;left:0 !important;width:100% !important;height:100% !important;
+    background:rgba(0,0,0,0.45) !important;z-index:90 !important;
+    -webkit-backdrop-filter:blur(2px) !important;backdrop-filter:blur(2px) !important;
+  }
+  .sb-overlay.show{display:block !important}
   /* Header */
-  .header{padding:12px 14px 0;gap:10px;flex-wrap:wrap}
+  .header{padding:8px 10px 0;gap:8px;flex-wrap:wrap}
   .header-right{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
   .header-right > div:last-child{min-width:0;flex:1}
   .header-right h1{font-size:17px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .header-right p{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .header-left{width:100%;justify-content:space-between}
-  .menu-toggle{display:flex}
+  .menu-toggle{display:flex;width:44px !important;height:44px !important;border-radius:12px !important}
+  .menu-toggle:active{background:var(--border) !important;transform:scale(0.95) !important}
   .search-box{width:100%;max-width:none;flex:1}
   /* Content & grids */
-  .content{padding:14px 12px 24px}
-  .stats-row,.grid-2,.grid-2-1,.product-grid,.pipeline,.report-grid{grid-template-columns:1fr;gap:12px}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .stat-card{padding:14px 12px;gap:12px}
-  .stat-card .stat-icon{width:40px;height:40px}
-  .stat-card .stat-icon svg{width:18px;height:18px}
-  .stat-info .value{font-size:18px}
-  .card{padding:16px 12px;border-radius:14px}
-  .card-header{flex-wrap:wrap;gap:8px}
+  .content{padding:10px 10px 20px;overflow-x:hidden;max-width:100vw}
+  .card{overflow:hidden;max-width:100%}
+  .stats-row,.grid-2,.grid-2-1,.product-grid,.pipeline,.report-grid{grid-template-columns:1fr;gap:10px}
+  .stats-row{grid-template-columns:repeat(2,1fr);margin-bottom:14px !important}
+  .stat-card{padding:10px 10px;gap:8px}
+  .stat-card .stat-icon{width:34px;height:34px}
+  .stat-card .stat-icon svg{width:16px;height:16px}
+  .stat-info .value{font-size:16px}
+  .stat-info .label{font-size:11px}
+  .card{padding:10px 8px;border-radius:12px}
+  .card-header{flex-wrap:wrap;gap:4px;margin-bottom:6px !important}
+  .card-header h3{font-size:13px !important;font-weight:700}
+  .card-header .sub{font-size:10px !important}
+  .card-header .btn-link{font-size:11px !important}
   .grid-2-1{grid-template-columns:1fr}
-  .chart-box{height:220px}
+  .chart-box{height:150px !important}
   /* Toolbars & tabs */
   .section-toolbar{flex-direction:column;align-items:stretch !important;gap:10px}
   .section-toolbar .tabs{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
   .section-toolbar .tabs::-webkit-scrollbar{display:none}
-  .section-toolbar .tab{white-space:nowrap;flex-shrink:0;padding:7px 12px;font-size:11px}
+  .section-toolbar .tab{white-space:nowrap;flex:1 1 0 !important;min-width:0 !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;justify-content:center !important}
   .section-search{min-width:0;max-width:none;width:100%;flex:none}
   .section-search input{font-size:13px}
   .pf-bar{gap:6px}
   .pf-chip{padding:6px 10px;font-size:11px}
   /* Tables — horizontal scroll with touch */
-  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
-  .tbl-wrap table{min-width:560px}
-  table th{font-size:10px;padding:8px 10px;white-space:nowrap}
-  table td{font-size:12px;padding:10px 10px}
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -2px;padding:0 2px}
+  .tbl-wrap table{min-width:100%}
+  table th{font-size:9px;padding:6px 6px;white-space:nowrap}
+  table td{font-size:11px;padding:7px 6px}
+  /* Badge compact */
+  .badge{font-size:9px !important;padding:2px 6px !important}
   /* Product */
   .product-grid{grid-template-columns:repeat(2,1fr)}
   .product-card{padding:14px}
@@ -1152,14 +1234,23 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   .form-row{grid-template-columns:1fr;gap:10px}
   .modal h2{font-size:15px}
   /* Quick actions */
-  .quick-row{gap:8px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .quick-row::-webkit-scrollbar{display:none}
-  .quick-btn{flex-shrink:0}
+  .quick-row{
+    display:flex !important;gap:8px !important;flex-wrap:nowrap !important;
+    overflow-x:auto !important;overflow-y:hidden !important;
+    -webkit-overflow-scrolling:touch !important;scrollbar-width:none !important;
+    padding:0 10px 6px !important;margin:0 -10px 12px !important;
+    scroll-snap-type:x proximity !important;scroll-padding-inline:10px !important;
+  }
+  .quick-row::-webkit-scrollbar{display:none !important}
+  .quick-btn{
+    flex:0 0 auto !important;scroll-snap-align:start !important;white-space:nowrap !important;
+    min-height:36px !important;padding:8px 12px !important;font-size:12px !important;
+  }
   /* Notification banner */
   .notif-banner{margin:0 12px 12px;padding:10px 12px;gap:10px}
   .notif-banner .txt p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   /* Session bar */
-  .session-bar{padding:8px 12px;gap:8px}
+  .session-bar{padding:6px 10px;gap:6px;font-size:11px}
   .session-bar .sb-track{min-width:60px}
   /* Pipeline */
   .pipeline{grid-template-columns:1fr}
@@ -1175,23 +1266,316 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   /* Tickets / contacts toolbar stacking handled by section-toolbar */
   /* Filters dropdowns full width on mobile — JS sets top dynamically */
   .pf-dd{position:fixed;right:12px;left:12px;top:auto;min-width:0;max-width:none;max-height:min(52vh,300px)}
+
+  /* ══════════════════════════════════════════════════════
+     ALL SECTIONS — Universal compact mobile styles
+     ══════════════════════════════════════════════════════ */
+
+  /* Prevent any overflow on all sections */
+  .section{overflow-x:hidden !important;max-width:100% !important}
+  .section .card{overflow:hidden !important;max-width:100% !important}
+
+  /* All tables: fit within viewport, no forced min-width */
+  .section .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .section .tbl-wrap table{min-width:100% !important}
+  .section table th{font-size:9px;padding:6px 6px;white-space:nowrap}
+  .section table td{font-size:11px;padding:7px 6px}
+
+  /* All section toolbars & tabs: compact — تب‌ها هم‌اندازه */
+  .section .section-toolbar{gap:8px !important}
+  .section .section-toolbar .tabs{gap:4px !important;width:100% !important}
+  .section .section-toolbar .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important;text-align:center !important}
+  .section .section-search{width:100% !important}
+  .section .section-search input{font-size:13px !important;padding:8px 10px !important}
+
+  /* All stat rows in any section: 2 columns */
+  .section .stats-row{grid-template-columns:repeat(2,1fr) !important;gap:8px !important}
+  .section .stat-card{padding:10px 8px !important;gap:8px !important}
+  .section .stat-card .stat-icon{width:34px !important;height:34px !important}
+  .section .stat-card .stat-icon svg{width:16px !important;height:16px !important}
+  .section .stat-info .value{font-size:15px !important}
+  .section .stat-info .label{font-size:10px !important}
+
+  /* All cards in any section */
+  .section .card{padding:10px 8px !important;border-radius:12px !important}
+  .section .card-header{margin-bottom:8px !important;gap:6px !important}
+  .section .card-header h3{font-size:13px !important}
+  .section .card-header .sub{font-size:10px !important}
+
+  /* All product cards: compact */
+  .section .product-card{padding:10px !important}
+  .section .product-card h4{font-size:12px !important}
+  .section .product-card .price{font-size:14px !important}
+  .section .product-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px !important}
+
+  /* All pipelines: single column */
+  .section .pipeline{grid-template-columns:1fr !important;gap:8px !important}
+
+  /* All grids in sections */
+  .section .grid-2,.section .grid-2-1{grid-template-columns:1fr !important;gap:10px !important}
+  .section .report-grid{grid-template-columns:1fr !important;gap:10px !important}
+
+  /* All modals: fit viewport */
+  .section .modal{width:96vw !important;max-width:96vw !important;padding:14px 10px !important;max-height:90vh !important;border-radius:14px !important}
+  .section .modal h2{font-size:14px !important}
+  .section .form-row{grid-template-columns:1fr !important;gap:8px !important}
+  .section .modal .fg label{font-size:11px !important}
+  .section .modal input,.section .modal select,.section .modal textarea{font-size:13px !important;padding:8px 10px !important}
+
+  /* All quick action rows — اسکرول افقی در موبایل */
+  .section .quick-row{
+    display:flex !important;gap:8px !important;flex-wrap:nowrap !important;
+    overflow-x:auto !important;overflow-y:hidden !important;
+    -webkit-overflow-scrolling:touch !important;scrollbar-width:none !important;
+    padding:0 10px 6px !important;margin:0 -10px 12px !important;
+    scroll-snap-type:x proximity !important;
+  }
+  .section .quick-row::-webkit-scrollbar{display:none !important}
+  .section .quick-btn{flex:0 0 auto !important;scroll-snap-align:start !important;white-space:nowrap !important;padding:7px 10px !important;font-size:11px !important;min-height:34px !important}
+
+  /* All badges */
+  .section .badge{font-size:9px !important;padding:2px 6px !important}
+
+  /* All notes / tickets / contacts cards */
+  .section .contact-card,.section .ticket-card,.section .note-card{padding:10px !important;gap:8px !important}
+
+  /* All charts in any section */
+  .section .chart-box{height:160px !important}
+
+  /* Profile / settings forms */
+  .section .profile-card,.section .settings-card{padding:12px 10px !important}
+  .section input[type="text"],.section input[type="number"],.section input[type="password"],.section input[type="email"],.section select,.section textarea{font-size:13px !important;padding:9px 10px !important;border-radius:10px !important}
+
+  /* All notification banners */
+  .section .notif-banner{margin:0 8px 8px !important;padding:8px 10px !important}
+
+  /* ══════════════════════════════════════════════════════
+     TICKETS SECTION — Mobile fixes
+     ══════════════════════════════════════════════════════ */
+  #sec-tickets > div:first-child{
+    flex-direction:column !important;gap:8px !important;
+    align-items:stretch !important;
+  }
+  #sec-tickets .tabs{
+    display:flex !important;flex-wrap:nowrap !important;
+    gap:4px !important;padding-bottom:4px !important;
+    width:100% !important;
+  }
+  #sec-tickets .tabs::-webkit-scrollbar{display:none !important}
+  #sec-tickets .tabs .tab{
+    flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;
+    padding:6px 8px !important;font-size:11px !important;
+    white-space:nowrap !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  }
+  #sec-tickets .section-toolbar{
+    flex-direction:row !important;gap:6px !important;flex-wrap:wrap !important;
+    align-items:center !important;
+  }
+  #sec-tickets .section-search{flex:1 1 120px !important;min-width:0 !important}
+  #sec-tickets .section-search input{font-size:12px !important;padding:7px 8px !important}
+  #sec-tickets .section-search svg{width:14px !important;height:14px !important}
+  /* Ticket header buttons — compact, consistent height */
+  #sec-tickets .btn-accent{
+    flex-shrink:0 !important;padding:7px 12px !important;font-size:11px !important;
+    border-radius:10px !important;min-height:34px !important;
+    display:inline-flex !important;align-items:center !important;gap:5px !important;
+    white-space:nowrap !important;
+  }
+  #sec-tickets .btn-accent svg{width:12px !important;height:12px !important}
+  /* Export buttons (PDF/XLSX) — compact */
+  #sec-tickets .btn-ghost,
+  #sec-tickets .btn:not(.btn-accent){
+    flex-shrink:0 !important;padding:6px 10px !important;font-size:11px !important;
+    border-radius:10px !important;min-height:34px !important;
+    display:inline-flex !important;align-items:center !important;gap:4px !important;
+    white-space:nowrap !important;
+  }
+  #sec-tickets .btn-ghost svg,
+  #sec-tickets .btn:not(.btn-accent) svg{width:13px !important;height:13px !important}
+
+  /* Ticket detail view — compact on mobile */
+  #sec-tickets #ticketDetail > div:first-child{
+    flex-wrap:wrap !important;gap:6px !important;
+  }
+  #sec-tickets #ticketDetail .btn-ghost{font-size:11px !important;padding:5px 8px !important}
+  #sec-tickets #ticketDetail .badge{font-size:9px !important;padding:2px 6px !important}
+  #sec-tickets #ticketDetail .card{padding:0 !important}
+  #sec-tickets #ticketDetail .card > div{padding:10px !important}
+  #sec-tickets #ticketDetail textarea{
+    font-size:12px !important;padding:8px !important;min-height:60px !important;
+  }
+  #sec-tickets #ticketDetail select{font-size:11px !important;padding:6px 8px !important}
+  #sec-tickets #ticketDetail img.ticket-msg-img{max-height:120px !important;border-radius:8px !important}
+  /* Back to list + ticket number header */
+  #sec-tickets #ticketDetail > div[style*="flex"]{
+    padding:0 !important;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     NOTES SECTION — Mobile compact
+     ══════════════════════════════════════════════════════ */
+  #sec-notes > .section-toolbar{
+    flex-direction:column !important;gap:8px !important;
+    align-items:stretch !important;
+  }
+  #sec-notes .tabs{
+    display:flex !important;flex-wrap:nowrap !important;
+    gap:4px !important;padding-bottom:4px !important;
+    width:100% !important;
+  }
+  #sec-notes .tabs::-webkit-scrollbar{display:none !important}
+  #sec-notes .tabs .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important}
+  #sec-notes .section-toolbar .section-toolbar{
+    flex-direction:row !important;flex-wrap:nowrap !important;gap:6px !important;
+  }
+  #sec-notes .section-search{flex:1 !important;min-width:0 !important}
+  #sec-notes .section-search input{font-size:12px !important;padding:7px 8px !important}
+  #sec-notes .btn-accent{flex-shrink:0 !important;padding:7px 10px !important;font-size:11px !important}
+  #sec-notes .notes-grid{gap:8px !important}
+  #sec-notes .notes-grid .card{padding:10px !important}
+
+  /* ══════════════════════════════════════════════════════
+     TASKS SECTION — Mobile compact
+     ══════════════════════════════════════════════════════ */
+  #sec-tasks > .section-toolbar{
+    flex-direction:column !important;gap:8px !important;
+    align-items:stretch !important;
+  }
+  #sec-tasks > .section-toolbar > div:first-child{
+    flex-wrap:wrap !important;gap:6px !important;
+  }
+  #sec-tasks > .section-toolbar > div:first-child select{
+    font-size:11px !important;padding:5px 8px !important;min-width:100px !important;
+  }
+  #sec-tasks .section-search{width:100% !important}
+  #sec-tasks .section-search input{font-size:12px !important;padding:7px 8px !important}
+  #sec-tasks .stats-row{grid-template-columns:repeat(2,1fr) !important;gap:8px !important}
+  /* Task board columns */
+  #sec-tasks .grid-2{grid-template-columns:1fr !important;gap:8px !important}
+  #sec-tasks .task-col{padding:8px !important}
+  #sec-tasks .task-col h4{font-size:12px !important}
+  #sec-tasks .task-card{padding:8px !important;border-radius:8px !important}
+  #sec-tasks .task-card .task-title{font-size:12px !important}
+  #sec-tasks .task-card .task-meta{font-size:10px !important}
+
+  /* ══════════════════════════════════════════════════════
+     CONTACTS SECTION — Mobile compact
+     ══════════════════════════════════════════════════════ */
+  #sec-contacts > .section-toolbar{
+    flex-direction:column !important;gap:8px !important;
+    align-items:stretch !important;
+  }
+  #sec-contacts .tabs{
+    display:flex !important;flex-wrap:nowrap !important;
+    gap:4px !important;padding-bottom:4px !important;
+    width:100% !important;
+  }
+  #sec-contacts .tabs::-webkit-scrollbar{display:none !important}
+  #sec-contacts .tabs .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important;gap:4px !important}
+  #sec-contacts .section-toolbar .section-toolbar{
+    flex-direction:row !important;flex-wrap:nowrap !important;gap:6px !important;
+  }
+  #sec-contacts .section-search{flex:1 !important;min-width:0 !important}
+  #sec-contacts .section-search input{font-size:12px !important;padding:7px 8px !important}
+  #sec-contacts .btn-accent{flex-shrink:0 !important;padding:7px 10px !important;font-size:11px !important}
+
+  /* ══════════════════════════════════════════════════════
+     RECEIVABLES / INVOICES — Mobile compact
+     ══════════════════════════════════════════════════════ */
+  #sec-receivables .grid-2{grid-template-columns:1fr !important}
+  #sec-invProforma .tbl-wrap table,
+  #sec-invSales .tbl-wrap table,
+  #sec-invPurchase .tbl-wrap table,
+  #sec-invSalesReturn .tbl-wrap table,
+  #sec-invPurchaseReturn .tbl-wrap table{min-width:100% !important}
+
+  /* ══════════════════════════════════════════════════════
+     SETTINGS — Mobile compact
+     ══════════════════════════════════════════════════════ */
+  #sec-settings .tabs{
+    display:flex !important;flex-wrap:nowrap !important;
+    gap:4px !important;padding-bottom:4px !important;
+    width:100% !important;
+  }
+  #sec-settings .tabs::-webkit-scrollbar{display:none !important}
+  #sec-settings .tabs .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important}
+  /* ── stab-users: فیلترها + دکمه افزودن — جلوگیری از نصفه افتادن دکمه ── */
+  #stab-users > div:first-child{
+    flex-wrap:wrap !important;gap:8px !important;
+    align-items:center !important;
+  }
+  #stab-users > div:first-child > div:first-child{
+    flex-wrap:wrap !important;gap:6px !important;flex:1 1 auto !important;
+  }
+  #stab-users .filter-sel{
+    flex:1 1 120px !important;min-width:0 !important;
+    font-size:12px !important;padding:7px 8px !important;
+  }
+  #stab-users .btn-accent{
+    flex-shrink:0 !important;white-space:nowrap !important;
+    padding:8px 14px !important;font-size:12px !important;
+    border-radius:10px !important;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     REPORTS — Mobile compact
+     ══════════════════════════════════════════════════════ */
+  #sec-reports .tabs{
+    display:flex !important;flex-wrap:nowrap !important;
+    gap:4px !important;padding-bottom:4px !important;
+    width:100% !important;
+  }
+  #sec-reports .tabs::-webkit-scrollbar{display:none !important}
+  #sec-reports .tabs .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important}
+  /* ── Automation tabs — اتوماسیون: نمای کلی / اتصالات / قوانین / وب‌هوک‌ها / لاگ ── */
+  #sec-automation .tabs{
+    display:flex !important;flex-wrap:nowrap !important;
+    gap:4px !important;padding-bottom:4px !important;
+    width:100% !important;
+  }
+  #sec-automation .tabs::-webkit-scrollbar{display:none !important}
+  #sec-automation .tabs .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important}
+  #sec-reports .report-grid{grid-template-columns:1fr !important;gap:10px !important}
 }
 @media(max-width:640px){
   .product-grid{grid-template-columns:1fr}
   .stats-row{grid-template-columns:1fr}
   #sec-logistics .stats-row{grid-template-columns:1fr 1fr}
   .header-right h1{font-size:16px}
-  .btn{padding:8px 14px;font-size:12px}
+  .btn{padding:7px 12px;font-size:12px}
   .btn-sm{padding:5px 10px;font-size:11px}
   .tabs{gap:2px;padding:2px}
-  .chart-box{height:200px}
+  .chart-box{height:160px !important}
+  .section .tbl-wrap table{min-width:100% !important}
+}
+/* ── Mobile LANDSCAPE: taller sidebar, smaller items, proportional layout ── */
+@media(max-width:768px) and (orientation:landscape){
+  .sidebar{
+    max-height:100vh !important;height:100vh !important;
+    /* width handled by JS positionSidebar() */
+  }
+  .sidebar.open{max-height:100vh !important}
+  .nav-item{padding:8px 10px !important;font-size:12px !important;gap:8px !important}
+  .nav-group-head{padding:8px 10px !important;font-size:12px !important;gap:8px !important}
+  .sidebar-footer{padding:8px 10px !important;gap:6px !important}
+  .sidebar-footer .user-avatar{width:28px !important;height:28px !important}
+  .sidebar-footer .user-info .name{font-size:11px !important}
+  #sbLogoutBtn{padding:6px 10px !important;font-size:11px !important}
+  /* Better landscape content layout */
+  .content{padding:10px 14px 16px !important}
+  .stats-row{grid-template-columns:repeat(4,1fr) !important;gap:10px !important}
+  .stat-card{padding:10px !important;gap:8px !important}
+  .stat-card .stat-icon{width:36px !important;height:36px !important}
+  .stat-info .value{font-size:16px !important}
+  .chart-box{height:180px !important}
+  .grid-2,.grid-2-1{grid-template-columns:1fr !important;gap:10px !important}
 }
 @media(max-width:480px){
-  .content{padding:12px 10px 20px}
-  .header{padding:10px 10px 0}
-  .card{padding:14px 10px}
-  .stat-card{padding:12px 10px}
-  .tbl-wrap table{min-width:520px}
+  .content{padding:8px 8px 16px}
+  .header{padding:8px 8px 0}
+  .card{padding:10px 8px}
+  .stat-card{padding:10px 8px}
+  .tbl-wrap table{min-width:100%}
   .modal{width:98vw;padding:16px 12px}
   .login-hero h1{font-size:28px}
   .login-card{padding:22px 16px}
@@ -1205,7 +1589,7 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   .stat-info .value{font-size:16px}
   .stat-info .label{font-size:11px}
   .btn{padding:7px 10px;font-size:11px}
-  .tbl-wrap table{min-width:480px}
+  .tbl-wrap table{min-width:100%}
 }
 
 /* ── Export Preview Modal ── */
@@ -1226,8 +1610,17 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
 .exp-prev-empty{padding:20px;text-align:center;color:var(--text-light);font-size:12px;border:1px dashed var(--border);border-radius:10px;background:#fff}
 .exp-prev-actions{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;background:#fff;flex-shrink:0;flex-wrap:wrap}
 /* ── Login Screen ── */
-.login-screen{position:fixed;inset:0;z-index:2000;display:flex;min-height:100vh;height:100vh;overflow:auto;background:#f7f5f0;direction:rtl}
+.login-screen{position:fixed;inset:0;z-index:20000;display:flex;min-height:100vh;height:100vh;overflow:auto;background:#f7f5f0;direction:rtl}
 .login-screen.hidden{display:none !important}
+/* ══════════════════════════════════════════════════════════════
+   LOGIN GATE — hide panel behind login screen
+   ══════════════════════════════════════════════════════════════ */
+body:not(.logged-in) .sidebar{display:none !important}
+body:not(.logged-in) .main,body:not(.logged-in) .session-bar{visibility:hidden !important;height:0 !important;overflow:hidden !important}
+body.logged-in .login-screen{display:none !important}
+body.logged-in .main,body.logged-in .session-bar{visibility:visible !important;height:auto !important;overflow:visible !important}
+body.logged-in .sidebar{visibility:visible !important}
+
 .login-right{
   flex:1;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(145deg,#162845 0%,#1d3354 45%,#2a4a6e 100%);
@@ -1268,10 +1661,11 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
 .login-error{font-size:11px;color:#e74c3c;margin-top:6px;min-height:16px;text-align:right}
 .login-code-input{letter-spacing:8px;font-size:20px !important;text-align:center !important;direction:ltr !important;font-weight:800}
 @media(max-width:860px){
-  .login-screen{flex-direction:column}
-  .login-right{padding:28px 22px;min-height:52vh;flex:none}
-  .login-hero h1{font-size:38px}
-  .login-left{flex:1;padding:22px;background:#f3f1ec}
+  .login-screen{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .login-right{padding:28px 22px;min-height:35vh;flex:none;background:linear-gradient(145deg,#162845 0%,#1d3354 45%,#2a4a6e 100%)}
+  .login-hero h1{font-size:32px}
+  .login-left{flex:1;padding:24px 20px;background:#f3f1ec;display:flex;align-items:flex-start;justify-content:center;padding-top:30px}
+  .login-card{width:100%;max-width:400px;padding:24px 20px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 }
 /* ── Notifications v2 — بازطراحی کامل مرکز اعلان ── */
 .notif-btn{position:relative}
@@ -2201,7 +2595,7 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
     <!-- ════════════════ AUTOMATION (n8n + هلو/سپیدار/لاندا) ════════════════ -->
     <div class="section" id="sec-automation">
       <div class="section-toolbar" style="justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px">
-        <div class="tabs" style="flex-wrap:wrap">
+        <div class="tabs">
           <button class="tab active" onclick="showAutoTab('overview',this)">نمای کلی</button>
           <button class="tab" onclick="showAutoTab('connections',this)">اتصالات</button>
           <button class="tab" onclick="showAutoTab('rules',this)">قوانین</button>
@@ -4336,6 +4730,8 @@ function go(id,opts){
   if(id && titles[id]){
     try{localStorage.setItem('crm_lastSection',id);}catch(e){}
   }
+  // Close sidebar on mobile when navigating
+  if(window.innerWidth<=768){ try{ closeSidebar(); }catch(e){} try{ positionSidebar(); }catch(e){} }
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const _goTarget=document.getElementById('sec-'+id);
@@ -4368,7 +4764,14 @@ function go(id,opts){
   if(id==='teamPerf') initTeamChart();
   if(id==='tasks'){ try{ renderTasksBoard(); }catch(e){} try{ initTasksChart(); }catch(e){} }
   if(id==='tickets') renderTickets();
-  if(window.innerWidth<=768){ document.getElementById('sidebar').classList.remove('open'); var _ov=document.getElementById('sbOverlay'); if(_ov) _ov.classList.remove('show'); document.body.style.overflow=''; }
+  if(window.innerWidth<=768){ try{ closeSidebar(); }catch(e){ document.getElementById('sidebar').classList.remove('open'); var _ov=document.getElementById('sbOverlay'); if(_ov) _ov.classList.remove('show'); document.body.classList.remove('sidebar-open'); document.body.style.overflow=''; } }
+  // Safety: ensure at least one section is active
+  try{
+    if(!document.querySelector('.section.active')){
+      var _dash=document.getElementById('sec-dashboard');
+      if(_dash) _dash.classList.add('active');
+    }
+  }catch(_e){}
 }
 
 // ── Modal ──
@@ -4405,6 +4808,28 @@ document.addEventListener('keydown',function(e){
   }
 });
 
+// ── Sidebar position: explicitly set left via JS to bypass RTL browser bugs ──
+function positionSidebar(){
+  var sb=document.getElementById('sidebar');
+  var tgl=document.getElementById('sbToggle');
+  if(!sb) return;
+  if(window.innerWidth<=768){
+    var isLandscape=window.innerHeight<window.innerWidth;
+    var maxW=isLandscape?220:260;
+    var w=Math.min(maxW, Math.round(window.innerWidth*0.8));
+    sb.style.left=(window.innerWidth-w)+'px';
+    sb.style.right='0';
+    sb.style.width=w+'px';
+    /* Hide desktop sb-toggle on mobile via JS too (CSS alone sometimes ignored) */
+    if(tgl){tgl.style.display='none';tgl.style.visibility='hidden';tgl.style.opacity='0';tgl.style.pointerEvents='none';tgl.style.width='0';tgl.style.height='0';tgl.style.overflow='hidden';}
+  } else {
+    sb.style.left='';
+    sb.style.right='';
+    sb.style.width='';
+    if(tgl){tgl.style.display='';tgl.style.visibility='';tgl.style.opacity='';tgl.style.pointerEvents='';tgl.style.width='';tgl.style.height='';tgl.style.overflow='';}
+  }
+}
+
 // ── Sidebar toggle ──
 function toggleSB(){
   const sb=document.getElementById('sidebar');
@@ -4413,6 +4838,7 @@ function toggleSB(){
   if(window.innerWidth<=768){
     const willOpen=!sb.classList.contains('open');
     sb.classList.toggle('open');
+    document.body.classList.toggle('sidebar-open',willOpen);
     ov.classList.toggle('show');
     document.body.style.overflow=willOpen?'hidden':'';
     if(willOpen){ try{ closeAllPfDropdowns(); }catch(e){} try{ closeCarDropdown(); closeBrandDropdown(); closeCatDropdown(); closeCustCityDropdown(); }catch(e){} }
@@ -4428,10 +4854,12 @@ function closeSidebar(){
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('sbOverlay');
   sb.classList.remove('open');
+  document.body.classList.remove('sidebar-open');
   if(ov) ov.classList.remove('show');
   document.body.style.overflow='';
 }
 window.addEventListener('resize',function(){
+  positionSidebar();
   if(window.innerWidth>768){
     var sb=document.getElementById('sidebar');
     var ov=document.getElementById('sbOverlay');
@@ -4884,13 +5312,17 @@ function getTeamPerfData(){
 function initDashCharts(){
   if(typeof Chart==='undefined') return;
   if(ch1)try{ch1.destroy();}catch(e){} if(ch2)try{ch2.destroy();}catch(e){}
-  const trend=getDailySalesTrend();
-  const c1=document.getElementById('chSaleTrend');
-  if(c1){ch1=new Chart(c1,{type:'line',data:{labels:trend.labels,datasets:[{label:'فروش روزانه (هزار تومان)',data:trend.data,borderColor:'#e8920b',backgroundColor:'rgba(232,146,11,0.08)',fill:true,tension:.4,borderWidth:3,pointBackgroundColor:'#e8920b',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:4}]},options:{...cDef,scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.03)'},ticks:{font:{family:'Vazirmatn',size:10},callback:function(v){return faNum(v);}}},x:{grid:{display:false},ticks:{font:{family:'Vazirmatn',size:10}}}}}})}
-  const dist=getCustomerCityDist();
-  const palette=['#e8920b','#3498db','#2ecc71','#9b59b6','#e74c3c','#9a9cae','#f5a623','#1abc9c','#e67e22','#34495e'];
-  const c2=document.getElementById('chCustDist');
-  if(c2){ch2=new Chart(c2,{type:'doughnut',data:{labels:dist.labels,datasets:[{data:dist.data,backgroundColor:dist.labels.map(function(_,i){return palette[i%palette.length];}),borderWidth:0,spacing:2}]},options:{...cDef,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{family:'Vazirmatn',size:10},usePointStyle:true,padding:10}}}}})}
+  var _mob=window.innerWidth<=768;
+  var _trendFontSize=_mob?9:10;
+  var _trendPtRadius=_mob?2:4;
+  var _trendBorderWidth=_mob?2:3;
+  var trend=getDailySalesTrend();
+  var c1=document.getElementById('chSaleTrend');
+  if(c1){ch1=new Chart(c1,{type:'line',data:{labels:trend.labels,datasets:[{label:'فروش روزانه (هزار تومان)',data:trend.data,borderColor:'#e8920b',backgroundColor:'rgba(232,146,11,0.08)',fill:true,tension:.4,borderWidth:_trendBorderWidth,pointBackgroundColor:'#e8920b',pointBorderColor:'#fff',pointBorderWidth:1,pointRadius:_trendPtRadius}]},options:{...cDef,responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.03)'},ticks:{font:{family:'Vazirmatn',size:_trendFontSize},callback:function(v){return faNum(v);},maxTicksLimit:5}},x:{grid:{display:false},ticks:{font:{family:'Vazirmatn',size:_trendFontSize},maxTicksLimit:6}}}}})}
+  var dist=getCustomerCityDist();
+  var palette=['#e8920b','#3498db','#2ecc71','#9b59b6','#e74c3c','#9a9cae','#f5a623','#1abc9c','#e67e22','#34495e'];
+  var c2=document.getElementById('chCustDist');
+  if(c2){ch2=new Chart(c2,{type:'doughnut',data:{labels:dist.labels,datasets:[{data:dist.data,backgroundColor:dist.labels.map(function(_,i){return palette[i%palette.length];}),borderWidth:0,spacing:2}]},options:{...cDef,responsive:true,maintainAspectRatio:false,cutout:_mob?'55%':'62%',plugins:{legend:{position:_mob?'bottom':'right',labels:{font:{family:'Vazirmatn',size:_mob?9:10},usePointStyle:true,padding:_mob?6:10}}}}})}
 }
 
 function initReportCharts(){
@@ -5713,6 +6145,7 @@ function updateCustomerCounts(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  try{ positionSidebar(); }catch(e){}
   // Init Jalali date pickers FIRST — if chart fails, picker still works
   try{
     document.querySelectorAll('[data-jd]').forEach(function(el){ try{ new JalaliDatePicker(el); }catch(_e){ console.warn('Jalali init failed for',el.id||el,_e); } });
@@ -9718,6 +10151,18 @@ function loginSingle(){
         scr.classList.add('hidden');
         scr.style.display='none';
       }
+      document.body.classList.add('logged-in');
+
+      // Force show main content + close sidebar on mobile
+      try{
+        const _mainEl=document.querySelector('.main');
+        if(_mainEl){
+          const _isMob=window.innerWidth<=768;
+          _mainEl.style.cssText='visibility:visible !important;height:auto !important;min-height:100vh !important;display:flex !important;flex-direction:column !important;overflow:visible !important'+(_isMob?';margin-right:0 !important':'');
+        }
+        try{ closeSidebar(); }catch(e){}
+        try{ positionSidebar(); }catch(e){}
+      }catch(_e){}
 
       const last=_safeLSGet('crm_lastSection')||'dashboard';
       go(last);
@@ -9854,6 +10299,7 @@ function doLogout(){
   try{ _updateTasksSidebarBadges(); }catch(e){}
   const scr=document.getElementById('loginScreen');
   if(scr){ scr.classList.remove('hidden'); try{ scr.style.removeProperty('display'); }catch(e){} scr.style.display=''; }
+  document.body.classList.remove('logged-in');
   const s1=document.getElementById('loginStepSingle');
   if(s1) s1.style.display='';
   const em=document.getElementById('loginUsername'); if(em) em.value='';
@@ -10714,7 +11160,18 @@ function initLoginGate(){
       _scheduleSessionExpiry();
 
       const scr=document.getElementById('loginScreen');
-      if(scr){ scr.classList.add('hidden'); scr.style.display='none'; }
+      if(scr){ scr.classList.add('hidden'); scr.style.display='none'; } document.body.classList.add('logged-in');
+
+      // Force show main content + close sidebar on mobile
+      try{
+        const _mainEl=document.querySelector('.main');
+        if(_mainEl){
+          const _isMob=window.innerWidth<=768;
+          _mainEl.style.cssText='visibility:visible !important;height:auto !important;min-height:100vh !important;display:flex !important;flex-direction:column !important;overflow:visible !important'+(_isMob?';margin-right:0 !important':'');
+        }
+        try{ closeSidebar(); }catch(e){}
+        try{ positionSidebar(); }catch(e){}
+      }catch(_e){}
 
       if(typeof _startSessionBar==='function') _startSessionBar();
 
@@ -12708,6 +13165,7 @@ async function _syncRun(){
 
 // ── Auto sync on page load + every 2 minutes ──
 window.addEventListener('load', function(){
+  try{ positionSidebar(); }catch(e){}
   _syncIndicator(navigator.onLine);
   if(_apiEnabled()){
     setTimeout(_syncRun, 3000); // initial sync after 3s
