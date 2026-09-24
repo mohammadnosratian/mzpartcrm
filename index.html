@@ -1347,7 +1347,7 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   .section input[type="text"],.section input[type="number"],.section input[type="password"],.section input[type="email"],.section select,.section textarea{font-size:13px !important;padding:9px 10px !important;border-radius:10px !important}
 
   /* All notification banners */
-  .section .notif-banner{margin:0 8px 8px !important;padding:8px 10px !important}
+  .section .notif-banner{margin:12px 8px !important;padding:8px 10px !important}
 
   /* ══════════════════════════════════════════════════════
      TICKETS SECTION — Mobile fixes
@@ -1536,6 +1536,41 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   #sec-automation .tabs::-webkit-scrollbar{display:none !important}
   #sec-automation .tabs .tab{flex:1 1 0 !important;min-width:56px !important;min-height:30px !important;padding:6px 8px !important;font-size:11px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;white-space:nowrap !important}
   #sec-reports .report-grid{grid-template-columns:1fr !important;gap:10px !important}
+
+  /* ── Toast / Notifications — موبایل بهینه ── */
+  .toast{
+    bottom:max(12px, env(safe-area-inset-bottom, 0px)) !important;
+    left:50% !important;right:auto !important;
+    transform:translateX(-50%) !important;
+    width:92vw !important;max-width:92vw !important;
+    padding:9px 14px !important;font-size:12px !important;
+    border-radius:10px !important;line-height:1.6 !important;
+    text-align:center !important;white-space:normal !important;
+    word-break:break-word !important;box-sizing:border-box !important;
+  }
+  .notif-banner{margin:12px 8px !important;padding:9px 10px !important;gap:8px !important;border-radius:12px !important}
+  .notif-banner .icon{width:32px !important;height:32px !important;border-radius:9px !important;flex-shrink:0 !important}
+  .notif-banner .icon svg{width:16px !important;height:16px !important}
+  .notif-banner .txt b{font-size:12px !important}
+  .notif-banner .txt p{font-size:11px !important;-webkit-line-clamp:2 !important;line-height:1.6 !important}
+  .notif-banner .nbc{font-size:10px !important;padding:3px 8px !important}
+  .notif-panel{left:8px !important;right:8px !important;width:auto !important;max-width:none !important;top:46px !important;border-radius:14px !important}
+  .notif-panel-head{padding:10px 12px !important}
+  .notif-panel-head h4{font-size:12px !important}
+  .notif-item{padding:10px 12px !important;gap:8px !important}
+  .notif-item-title{font-size:12px !important}
+  .notif-item-body{font-size:11px !important;-webkit-line-clamp:2 !important}
+  .notif-item-meta{font-size:10px !important;margin-top:5px !important}
+  .notif-badge{top:2px !important;left:2px !important;min-width:17px !important;height:17px !important;font-size:9px !important;padding:0 4px !important;border-width:1.5px !important}
+  .remind-global-wrap{margin:12px 8px !important}
+  .remind-global-banner{padding:9px 10px !important;gap:8px !important;border-radius:12px !important}
+  .remind-global-banner .rg-icon{width:32px !important;height:32px !important;border-radius:9px !important}
+  .remind-global-banner .rg-txt b{font-size:12px !important}
+  .remind-global-banner .rg-txt p{font-size:11px !important}
+  .notifs-stat-row{grid-template-columns:1fr 1fr !important;gap:8px !important}
+  .notifs-stat{padding:10px 12px !important;gap:8px !important}
+  .notifs-stat .ns-icon{width:32px !important;height:32px !important}
+  .notifs-stat .ns-value{font-size:17px !important}
 }
 @media(max-width:640px){
   .product-grid{grid-template-columns:1fr}
@@ -1695,7 +1730,7 @@ body.logged-in .sidebar{visibility:visible !important}
 .notif-item-meta{font-size:10.5px;color:var(--text-light);margin-top:7px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .notif-empty{padding:36px 20px;text-align:center;color:var(--text-light);font-size:12px;line-height:1.8}
 .notif-empty .ne-icon{width:56px;height:56px;border-radius:16px;background:#fdf6ea;border:1px dashed rgba(232,146,11,0.22);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--accent)}
-.notif-banner{margin:0 32px 16px;background:linear-gradient(135deg,#fff7ec 0%,#ffffff 100%);border:1px solid rgba(232,146,11,0.18);border-right:4px solid var(--accent);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(232,146,11,0.10);animation:notifBannerIn .3s ease}
+.notif-banner{margin:14px 32px;background:linear-gradient(135deg,#fff7ec 0%,#ffffff 100%);border:1px solid rgba(232,146,11,0.18);border-right:4px solid var(--accent);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(232,146,11,0.10);animation:notifBannerIn .3s ease}
 @keyframes notifBannerIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .notif-banner .icon{width:36px;height:36px;border-radius:11px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(232,146,11,0.28)}
 .notif-banner .txt{flex:1;min-width:0}
@@ -1718,7 +1753,7 @@ body.logged-in .sidebar{visibility:visible !important}
 .notif-pick-search{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:12px;margin-bottom:8px;outline:none}
 .notif-pick-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,146,11,0.12)}
 /* ── Remind Global Banner — نوار یادآوری سراسری (در هر بخش دیده می‌شود) ── */
-.remind-global-wrap{margin:0 32px 14px;display:none}
+.remind-global-wrap{margin:14px 32px;display:none}
 .remind-global-wrap.show{display:block;animation:notifBannerIn .28s ease}
 .remind-global-banner{background:linear-gradient(135deg,#fff7ec 0%,#ffffff 100%);border:1px solid rgba(232,146,11,0.22);border-right:4px solid var(--accent);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 18px rgba(232,146,11,0.12)}
 .remind-global-banner .rg-icon{width:36px;height:36px;border-radius:11px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(232,146,11,0.28);animation:rgPulse 1.6s ease infinite}
@@ -8273,7 +8308,7 @@ function _collectExportTables(secId, reportNameHint){
       [].slice.call(piTbodyEl.querySelectorAll('tr')).forEach(function(tr){
         if(tr.style.display==='none' || tr.classList.contains('search-hidden') || tr.classList.contains('gs-empty-row')) return;
         if(tr.children.length<10) return;
-        const name=(tr.cells[0]?.textContent||'').replace(/\s+/g,' ').trim();
+        const name=(function(){var _td=tr.cells[0];if(!_td)return '';var _cc=_td.cloneNode(true);var _av=_cc.querySelector('.avatar');if(_av)_av.remove();return _cc.textContent.replace(/\s+/g,' ').trim();})();
         const brand=(tr.getAttribute('data-brand')|| tr.cells[1]?.textContent||'').trim()||'—';
         const code=(tr.cells[2]?.textContent||'').trim();
         const cat=(tr.getAttribute('data-category')|| tr.cells[3]?.textContent||'').trim()||'—';
@@ -8369,7 +8404,7 @@ function _collectExportTables(secId, reportNameHint){
       if(tr.classList.contains('gs-empty-row')) return;
       if(tr.classList.contains('search-hidden')) return;
       if(tr.querySelector('.perm-section')) return;
-      let cols=[].slice.call(tr.children).map(function(td){return td.textContent.replace(/\s+/g,' ').trim();});
+      let cols=[].slice.call(tr.children).map(function(td){var c=td.cloneNode(true);var av=c.querySelector('.avatar');if(av)av.remove();return c.textContent.replace(/\s+/g,' ').trim();});
       if(cols.every(function(c){return !c;})) return;
       if(cols.length===1 && tr.querySelector('[colspan]')){
         if(cols[0]) out.push({title:cols[0],headers:headers.length?headers:hd,rows:[]});
@@ -11547,7 +11582,7 @@ function openContactModal(){
 function editContact(btn){
   const tr=btn.closest('tr'); if(!tr) return;
   _editContactRow=tr;
-  const custName=(tr.cells[0]? tr.cells[0].textContent.trim():'');
+  var _cnTd=tr.cells[0]; var custName=(function(){if(!_cnTd)return '';var cc=_cnTd.cloneNode(true);var av2=cc.querySelector('.avatar');if(av2)av2.remove();return cc.textContent.trim();})();
   const typeTxt=(tr.cells[1]? tr.cells[1].textContent.trim():'');
   const subject=(tr.cells[2]? tr.cells[2].textContent.trim():'');
   const dateTxt=(tr.cells[3]? tr.cells[3].textContent.trim():'');
