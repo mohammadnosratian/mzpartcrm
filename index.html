@@ -1433,6 +1433,12 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   #sec-notes .btn-accent{flex-shrink:0 !important;padding:7px 10px !important;font-size:11px !important}
   #sec-notes .notes-grid{gap:8px !important}
   #sec-notes .notes-grid .card{padding:10px !important}
+  #sec-notes .note-card{padding:12px 10px !important;border-radius:10px !important}
+  #sec-notes .note-title{font-size:12px !important;line-height:1.5 !important}
+  #sec-notes .note-body{font-size:11px !important;line-height:1.7 !important;-webkit-line-clamp:3 !important}
+  #sec-notes .note-head{margin-bottom:6px !important;gap:6px !important}
+  #sec-notes .note-foot{margin-top:8px !important;padding-top:8px !important}
+  #sec-notes .note-foot .badge{font-size:9.5px !important;padding:2px 6px !important}
 
   /* ══════════════════════════════════════════════════════
      TASKS SECTION — Mobile compact
@@ -1562,11 +1568,20 @@ table tr:hover td{background:rgba(232,146,11,0.02)}
   .notif-item-body{font-size:11px !important;-webkit-line-clamp:2 !important}
   .notif-item-meta{font-size:10px !important;margin-top:5px !important}
   .notif-badge{top:2px !important;left:2px !important;min-width:17px !important;height:17px !important;font-size:9px !important;padding:0 4px !important;border-width:1.5px !important}
-  .remind-global-wrap{margin:12px 8px !important}
-  .remind-global-banner{padding:9px 10px !important;gap:8px !important;border-radius:12px !important}
-  .remind-global-banner .rg-icon{width:32px !important;height:32px !important;border-radius:9px !important}
-  .remind-global-banner .rg-txt b{font-size:12px !important}
-  .remind-global-banner .rg-txt p{font-size:11px !important}
+  .remind-global-wrap{margin:8px 8px !important}
+  .remind-global-banner{padding:10px 10px !important;gap:8px !important;border-radius:12px !important;flex-wrap:wrap !important}
+  .remind-global-banner .rg-icon{width:28px !important;height:28px !important;border-radius:8px !important}
+  .remind-global-banner .rg-icon svg{width:14px !important;height:14px !important}
+  .remind-global-banner .rg-txt b{font-size:11.5px !important;gap:4px !important}
+  .remind-global-banner .rg-txt b .rg-count{font-size:9px !important;padding:1px 6px !important}
+  .remind-global-banner .rg-txt p{font-size:10.5px !important;white-space:normal !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;overflow:hidden !important;line-height:1.6 !important}
+  .remind-global-banner .rg-actions{width:100% !important;justify-content:flex-start !important;gap:6px !important;margin-top:2px !important}
+  .remind-global-banner .rg-actions .btn{padding:5px 10px !important;font-size:10.5px !important;min-height:30px !important;border-radius:999px !important}
+  .remind-global-banner .rg-list{gap:6px !important;margin-top:8px !important}
+  .remind-global-banner .rg-item{padding:7px 9px !important;border-radius:9px !important;gap:6px !important}
+  .remind-global-banner .rg-item b{font-size:11px !important;line-height:1.5 !important}
+  .remind-global-banner .rg-item span{font-size:10px !important}
+  .remind-global-banner .rg-item .btn{padding:4px 8px !important;font-size:10px !important;min-height:26px !important}
   .notifs-stat-row{grid-template-columns:1fr 1fr !important;gap:8px !important}
   .notifs-stat{padding:10px 12px !important;gap:8px !important}
   .notifs-stat .ns-icon{width:32px !important;height:32px !important}
@@ -4673,11 +4688,6 @@ function _restoreSectionFromUrl(){
     let h=(location.hash||'').replace(/^#/,'');
     if(h==='products' || h==='inventory') h='productsInventory';
     if(h && titles[h]){ go(h,{noHash:true}); try{localStorage.setItem('crm_lastSection',h);}catch(e){} return true; }
-  }catch(e){}
-  try{
-    let ls=localStorage.getItem('crm_lastSection');
-    if(ls==='products' || ls==='inventory') ls='productsInventory';
-    if(ls && titles[ls]){ go(ls,{noHash:true}); try{ history.replaceState(null,'','#'+ls);}catch(e){ location.hash=ls; } return true; }
   }catch(e){}
   return false;
 }
@@ -10199,8 +10209,9 @@ function loginSingle(){
         try{ positionSidebar(); }catch(e){}
       }catch(_e){}
 
-      const last=_safeLSGet('crm_lastSection')||'dashboard';
-      go(last);
+      try{localStorage.setItem('crm_lastSection','dashboard');}catch(e){}
+      try{history.replaceState(null,'','#dashboard');}catch(e){try{location.hash='dashboard';}catch(_e){}}
+      go('dashboard');
 
       showToast&&showToast('خوش آمدید '+(user.name||user.email));
     } catch(e) {
@@ -11211,8 +11222,9 @@ function initLoginGate(){
       if(typeof _startSessionBar==='function') _startSessionBar();
 
       if(!_restoreSectionFromUrl()){
-        const ls=_safeLSGet('crm_lastSection')||'dashboard';
-        go(ls);
+        try{localStorage.setItem('crm_lastSection','dashboard');}catch(e){}
+        try{history.replaceState(null,'','#dashboard');}catch(e){try{location.hash='dashboard';}catch(_e){}}
+        go('dashboard');
       }
     } catch(e) {
       console.error('Auto-login apply failed', e);
